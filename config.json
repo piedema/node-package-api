@@ -1,0 +1,10 @@
+{
+  "ipc":{
+    "id":"node-crypto-api-server",
+    "silent":true
+  },
+  "express":{
+    "port":8080,
+    "timeout":5000
+  }
+}
