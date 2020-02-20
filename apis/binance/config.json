@@ -1,4 +1,5 @@
 {
   "APIKEY":"<key>",
-  "APISECRET":"<key>"
+  "APISECRET":"<key>",
+  "recvWindow":3000
 }

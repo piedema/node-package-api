@@ -1,3 +1,7 @@
-module.exports.get = function(params, cb){
-  cb('params: ' + params)
-}
+const coinmarketcap = require('coinmarketcap');
+
+module.exports = (function(){
+
+  return coinmarketcap;
+
+})();
