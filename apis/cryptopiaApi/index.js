@@ -1,4 +1,4 @@
-const package = require('coinmarketcap');
+const package = require('cryptopia-api');
 
 module.exports = (function(){
 

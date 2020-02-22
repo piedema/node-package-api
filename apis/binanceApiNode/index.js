@@ -1,4 +1,4 @@
-const package = require('coinmarketcap');
+const package = require('binance-api-node');
 
 module.exports = (function(){
 

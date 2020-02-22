@@ -1,13 +1,12 @@
 {
   "ipc":{
     "id":"node-crypto-api-server",
-    "silent":false
+    "silent":true
   },
   "express":{
-    "port":8080,
-    "timeout":5000
+    "port":8080
   },
-  "spaces":{
-    "lifespan":3600000
+  "space":{
+    "idleTimeout":3600000
   }
 }

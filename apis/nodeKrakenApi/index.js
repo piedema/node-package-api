@@ -1,4 +1,4 @@
-const package = require('coinmarketcap');
+const package = require('node-kraken-api');
 
 module.exports = (function(){
 

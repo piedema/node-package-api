@@ -1,4 +1,4 @@
-const package = require('coinmarketcap');
+const package = require('crypto-exchange');
 
 module.exports = (function(){
 

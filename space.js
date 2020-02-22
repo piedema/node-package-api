@@ -1,16 +1,20 @@
 
 // require fetch for packages using promises
-require('node-fetch');
+const fetch = require('node-fetch');
 
 const fs = require('fs');
 
 const modules = {};
+
+const lifespans = {};
 
 // listener to listen request coming from creater
 process.on('message', (data) => {
 
   if(!fs.existsSync(`./apis/${data.module}`)) return console.log(`A module with name ${data.module} does not exist.`);
   if(!modules[data.module]) modules[data.module] = require(`./apis/${data.module}/index.js`);
+
+  //console.log(process.send(modules[data.module]))
 
   run(data, (response) => {
     process.send(response);
@@ -25,7 +29,7 @@ function run(data, cb){
   let func = data.function.split('.');
   let params = data.parameters || [];
   if(typeof params === 'string') params = params.split(',');
-  let type = data.type || 'return';
+  let isPromise = data.isPromise;
 
   // build path to function
   let target = modules[mod];
@@ -34,7 +38,7 @@ function run(data, cb){
   });
 
   //check if function exists on path to avoid errors
-  if(!target) return console.log(`Module ${mod} does not have function ${func.join('.')}();`)
+  if(!target) return console.log(`${mod}.${func.join('.')}() does not exist.`)
 
   //replace all items named callback in params array with callback function
   for(let i = 0; i < params.length; i++){
@@ -46,8 +50,8 @@ function run(data, cb){
   }
 
   // logic for using promises
-  if(type === 'promise'){
-      return target(...params)
+  if(isPromise){
+      return target(...params);
         .then(function(data){
           cb(data);
         })
@@ -57,5 +61,5 @@ function run(data, cb){
   }
 
   // call target function for callback and return types. return data to be send to client
-  return target(...params);
+  if(!isPromise) return target(...params);
 }
