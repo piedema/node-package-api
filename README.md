@@ -57,8 +57,8 @@ npa.get('node-binance-api', 'websockets.miniTicker', ['callback'], false, (req, 
 ii: Parameters
 ```
 package: name of the package to load
-function: name of the function to execute. nested function are separated bij a '.', ie websockets.miniTicker
-parameters: parameters to pass to the function on execution, must bearray, with parameters separated bij ','. For a callback, put 'callback' in the parameters
+function: name of the function to execute. nested function are separated by a '.', ie websockets.miniTicker
+parameters: parameters to pass to the function on execution, must be array, with parameters separated by ','. For a callback, put 'callback' in the parameters
 promise: true if called package function returns promise
 cb: callback to execute if package is loaded
 ```
