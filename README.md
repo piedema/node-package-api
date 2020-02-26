@@ -27,6 +27,10 @@ i: Example
 npa.new('path', [], (req, status, res) => {
   console.log(req, status, res)
 })
+
+npa.new('node-binance-api', [], (req, status, res) => {
+  console.log(req, status, res)
+})
 ```
 
 ii: Parameters
@@ -39,7 +43,13 @@ callback: callback to execute if package is loaded
 ### Call function in package
 i: Example
 ```js
+// normal function example
 npa.get('path', 'dirname', [__dirname], false, (req, status, res) => {
+  console.log(req, status, res)
+})
+
+// nested websocket example
+npa.get('node-binance-api', 'websockets.miniTicker', ['callback'], false, (req, status, res) => {
   console.log(req, status, res)
 })
 ```
