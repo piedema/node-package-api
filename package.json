@@ -1,8 +1,8 @@
 {
-  "name": "node-crypto-api-server",
+  "name": "node-package-api",
   "version": "1.0.0",
-  "description": "Making all crypto api resources available through one server",
-  "main": "index.js",
+  "description": "Run packages in their own process",
+  "main": "node-package-api.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
