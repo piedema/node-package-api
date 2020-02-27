@@ -1,3 +1,109 @@
+node-package-api
+========================
+*a nodejs module for loading nodejs/js packages or modules in a separate process* with full support for Linux, Mac and Windows.
+
+**Security**
+Do not expose this package to the web without any security to prevent unauthorised access to your system.
+
+----
+#### Contents
+
+1. [Installation](#installation)
+2. [Config](#config)
+3. [Instantiate](#instantiate)
+4. [node-package-api properties](#properties)
+5. [Functions](#functions)
+  1. [new](#new)
+  2. [get](#get)
+  3. [destroy](#destroy)
+  4. [isSpaceDestroyed](#isSpaceDestroyed)
+  5. [resetIdle](#resetIdle)
+6. [Examples](#examples)
+
+----
+#### Installation
+```js
+npm install node-ipc --save
+```
+
+#### Config
+```json
+{
+  "idleTimeout":3600000,
+  "paths":false
+}
+```
+
+#### Instantiate
+```js
+const config = require('./config');
+const npa = require('./node-package-api')(config);
+```
+
+#### node-package-api properties
+1. The success parameter returns true if package and function is found
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### node-package-api
 node-package-api lets you cerate separate processes and run packages inside them.
 
@@ -21,8 +127,15 @@ const npa = require('node-package-api')();
 
 ### Config
 
+```json
+{
+  "idleTimeout":3600000,
+  "paths":false
+}
+```
+
 ### Load package/module in node-package-api
-i: Example
+1: Example
 ```js
 npa.new('path', [], (req, status, res) => {
   console.log(req, status, res)
