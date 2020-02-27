@@ -6,7 +6,7 @@ node-package-api
 Do not expose this package to the web without any security to prevent unauthorised access to your system.
 
 ----
-#### Contents
+#### contents
 
 1. [Installation](#installation)
 2. [Config](#config)
@@ -21,29 +21,65 @@ Do not expose this package to the web without any security to prevent unauthoris
 6. [Examples](#examples)
 
 ----
-#### Installation
+#### installation
 ```js
 npm install node-ipc --save
 ```
 
-#### Config
-```json
-{
-  "idleTimeout":3600000,
-  "paths":false
-}
+---
+#### config
+```js
+  {
+    "idleTimeout"     :     3600000,
+    "paths"           :     false
+  }
 ```
 
-#### Instantiate
+|   variable   |  type  | default value | documentation
+|--------------|--------|---------------|---------------
+| idleTimeout  | Number | 3600000       | Timeout for destroying space after no request is recieved
+| paths        | Array  | module.paths  | Array with strings where to look for installed packages
+
+#### instantiate
 ```js
 const config = require('./config');
 const npa = require('./node-package-api')(config);
 ```
 
+---
 #### node-package-api properties
-1. The success parameter returns true if package and function is found
+1. The success parameter returns true if package and function is found.
+2.
 
+---
+#### functions
+The following methods are available
+---
+#### new
 
+`npa.new(package, parameters, callback);`
+
+```js
+  npa.new('path', [], (req, status, res) => {
+    console.log(req, status, res);
+  });
+```
+
+---
+#### get
+
+`npa.get(package, function, parameters, promise, callback);`
+
+```js
+  npa.get('path', 'dirname', [__dirname], (req, status, res) => {
+    console.log(req, status, res);
+  });
+```
+
+---
+#### destroy
+
+`npa.destroy(callback);`
 
 
 
