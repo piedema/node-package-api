@@ -13,11 +13,12 @@ Do not expose this package to the web without any security to prevent unauthoris
 3. [Instantiate](#instantiate)
 4. [node-package-api properties](#properties)
 5. [Functions](#functions)
-  1. [new](#new)
+  1. [add](#add)
   2. [get](#get)
   3. [destroy](#destroy)
-  4. [isSpaceDestroyed](#isSpaceDestroyed)
-  5. [resetIdle](#resetIdle)
+  4. [build](#build)
+  5. [isDestroyed](#isDestroyed)
+  6. [resetIdle](#resetIdle)
 6. [Examples](#examples)
 
 ----
@@ -48,25 +49,39 @@ const npa = require('./node-package-api')(config);
 
 ---
 #### node-package-api properties
-1. The success parameter returns true if package and function is found.
-2.
+1. The success parameter returns true if package and function is found and executed, not if the function itself returns an error or response.
+2. Only one space per node-package-api can be build.
+3. Multiple packages can be initiated per space/node-package-api.
+4. Packages must be installed on your system and in paths in module.paths or config.paths
+5. Websockets can be used. On first callback call the result of the websocket is returned. Subsequent calls return the websocket data.
+6. Nested functions can be called by using '.'.
+7. Any place where you want to insert a callback in a functions parameters, just add 'callback' in de parameters array.
 
 ---
 #### functions
 The following methods are available
----
-#### new
 
-`npa.new(package, parameters, callback);`
+---
+#### add
+Adds specified package to the space (childprocess)
+
+`npa.add(package, parameters, callback);`
 
 ```js
-  npa.new('path', [], (req, status, res) => {
+  npa.add('path', [], (req, status, res) => {
     console.log(req, status, res);
   });
 ```
 
+|   variable   |  type    | default | required |documentation
+|--------------|----------|---------|----------|---------------
+| package      | String   |         | yes      | Name of package which should be added to space
+| parameters   | Array    | []      | no       | Array where every index represents a parameter needed when instantiating the package.
+| callback     | function | null    | no       | Callback function which will be called when the package is instantiated
+
 ---
 #### get
+Executes a function on the specified package
 
 `npa.get(package, function, parameters, promise, callback);`
 
@@ -76,144 +91,67 @@ The following methods are available
   });
 ```
 
+|   variable   |  type    | default | required |documentation
+|--------------|----------|---------|----------|---------------
+| package      | String   |         | yes      | Timeout for destroying space after no request is recieved
+| parameters   | Array    | []      | no       | Array where every index represents a parameter needed when calling a package's function
+| promise      | Boolean  | false   | no       | Pass true if package's function returns a promise
+| callback     | function | null    | no       | Callback function which will be called the functions result is returned from the space. This is not the callback for package's function itself.
+
+If the packacge's function has callback(s), you need to insert them in the parameters array, like following example. The 'callback strings' are automatically converted to a callback with (error, response) as parameters.
+```js
+  let parameters = [
+    'test_parameter_1',
+    'test_parameter_2',
+    'callback',
+    'test_parameter_3',
+    'callback'
+  ]
+```
+
 ---
 #### destroy
+Destroys space and thus kills childprocess
 
-`npa.destroy(callback);`
+`npa.destroy();`
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### node-package-api
-node-package-api lets you cerate separate processes and run packages inside them.
-
-### Supports
-NPM packages which export objects and functions and use callbacks, returns and promises.
-Also support your custom packages/modules.
-Supports packages containing websockets. The first callback contains the data returned from
-opening the websocket, following callbacks contain websocket data.
-
-### Installation
-```
-npm install node-package-api --save
-```
-
-### Getting started
-If config is omitted default values will be used
 ```js
-const config = require('./config')
-const npa = require('node-package-api')();
+  let destroyed = npa.destroy();
+  console.log(destroy);
 ```
 
-### Config
+---
+#### build
+Creates new space and childprocess. Only when space is destroyed before
 
-```json
-{
-  "idleTimeout":3600000,
-  "paths":false
-}
-```
+`npa.build();`
 
-### Load package/module in node-package-api
-1: Example
 ```js
-npa.new('path', [], (req, status, res) => {
-  console.log(req, status, res)
-})
-
-npa.new('node-binance-api', [], (req, status, res) => {
-  console.log(req, status, res)
-})
+  let build = npa.build();
+  console.log(build);
 ```
 
-ii: Parameters
-```
-package: name of the package to load
-parameters: parameters to pass to the package on instantiation if package is function
-callback: callback to execute if package is loaded
-```
+---
+#### isDestroyed
+See if space is destroyed
 
-### Call function in package
-i: Example
+`npa.isDestroyed();`
+
 ```js
-// normal function example
-npa.get('path', 'dirname', [__dirname], false, (req, status, res) => {
-  console.log(req, status, res)
-})
-
-// nested websocket example
-npa.get('node-binance-api', 'websockets.miniTicker', ['callback'], false, (req, status, res) => {
-  console.log(req, status, res)
-})
+  let isDestroyed = npa.isDestroyed();
+  console.log(isDestroyed);
 ```
 
-ii: Parameters
-```
-package: name of the package to load
-function: name of the function to execute. nested function are separated by a '.', ie websockets.miniTicker
-parameters: parameters to pass to the function on execution, must be array, with parameters separated by ','. For a callback, put 'callback' in the parameters
-promise: true if called package function returns promise
-cb: callback to execute if package is loaded
-```
-
-### destroy
-
-### isSpaceDestroyed
-
+---
 ### resetIdle
+Reset inactivity/idle timer to prevent descruction of space after inactivity
+
+`npa.resetIdle();`
+
+```js
+  let resetIdle = npa.resetIdle();
+  console.log(resetIdle);
+```
+
+---
+#### examples
