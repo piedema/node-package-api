@@ -1,7 +1,7 @@
 const config = require('./config');
 const npa = require('./node-package-api.js')(config);
 
-npa.new('path', [], (req, status, res) => {
+npa.add('path', [], (req, status, res) => {
   console.log(req, status, res)
 })
 
@@ -10,9 +10,29 @@ npa.get('path', 'dirname', [__dirname], false, (req, status, res) => {
   console.log(req, status, res)
 })
 
-// setTimeout(() => {
-// console.log(npa.resetIdle())
-// }, 9000)
+setInterval(() => {
+  npa.get('path', 'dirname', [__dirname], false, (req, status, res) => {
+    console.log(status, res)
+  })
+}, 1000)
+
+setTimeout(() => {
+  npa.destroy((req, status, res) => {
+    console.log(req, status, res)
+  })
+}, 4000);
+
+setTimeout(() => {
+  npa.build((req, status, res) => {
+    console.log(req, status, res)
+  })
+}, 9000);
+
+setTimeout(() => {
+  npa.add('path', [], (req, status, res) => {
+    console.log(req, status, res)
+  })
+}, 12000)
 
 // setTimeout(() => {
 // npa.destroy((status) => {

@@ -9,7 +9,7 @@ const packages = {};
 // standard error messages
 const ERROR = {
   PACKAGE_NOT_FOUND:'Package is not found',
-  PACKAGE_ALLREADY_LOADED:'Package is allready loaded',
+  PACKAGE_ALLREADY_LOADED:'Package is loaded',
   FUNCTION_NOT_FOUND:'Function is not found on package',
   NO_CB:'No callback function specified',
   PARAMETERS_IS_NOT_ARRAY:'Parameters is not array'

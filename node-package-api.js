@@ -12,16 +12,10 @@ const defaults = {
 const callbacks = {};
 
 // separate process which contains all loaded packages
-const space = fork('./space.js');
+let space;
 
 // store to be able to determin via function if space is still active (alive) or is allready destroyed
-let isSpaceDestroyed = false;
-
-// listen for messages coming from the space process
-// if message comes, it should execute the right callback
-space.on('message', (msg) => {
-  callbacks[msg.req.id](msg.req, msg.status, msg.res);
-});
+let isDestroyed;
 
 // logic for handling request to and termination of space
 module.exports = function(config){
@@ -31,16 +25,36 @@ module.exports = function(config){
   const paths = config.paths || defaults.paths;
 
   // function to destroy space on inactivity or function call
-  function destroySpace(){
+  function destroy(){
     // remote the timeout
     if(space.idleTimeout) clearTimeout(space.idleTimeout);
     // kill the space process
     space.kill();
     // set isSpaceDestroyed to true to check later if space is destroyed
-    if(space.killed) isSpaceDestroyed = true;
+    if(space.killed) isDestroyed = true;
+
+    // // listen for messages coming from the space process
+    // // if message comes, it should execute the right callback
+    // space.off('message', (msg) => {
+    // });
+
     // return the destroyed space
     return space
   }
+
+  // function to fork new space if space doesnt exist
+  function build(){
+    space = fork('./space.js');
+
+    // // listen for messages coming from the space process
+    // // if message comes, it should execute the right callback
+    // space.on('message', (msg) => {
+    //   return msg;
+    // });
+
+    if(space) isDestroyed = false;
+    return space;
+  };
 
   // function to reset time idleTimout space timer
   function resetIdle(){
@@ -57,12 +71,12 @@ module.exports = function(config){
   // promise is boolean (true if package function returns promise)
   // type is (new for new package, get for executing function on existing package)
   // cb is callback when data is returned from space
-  function newRequest(package, func, parameters, promise, type, cb){
+  function newRequest(package, func, parameters, promise = false, type, cb){
 
     // create id to reference callback function
     let id = parseInt(Math.random() * 1000000);
     // store callback in callbacks object to later execute the cb function when to correct data is returned from space
-    callbacks[id] = cb;
+    if(cb) callbacks[id] = cb;
 
     // new request object which also gets returned from space
     let req = {
@@ -79,11 +93,14 @@ module.exports = function(config){
     resetIdle();
 
     // if request is made while space is allready killed then notify caller
-    if(isSpaceDestroyed) return callbacks[req.id](req, false, 'Space is allready destroyed');
+    if(isDestroyed) return callbacks[req.id](req, false, 'Space is destroyed');
 
     // send the request to the space
     space.send(req);
   }
+
+  // build first space on instantiation
+  build();
 
   // return function to communicate with this module:
   // new: create new package in Space
@@ -96,17 +113,20 @@ module.exports = function(config){
   //
   // resetIdle: reset idle timer/inactivity to prevent space is destroyed on inactivity
   return {
-    new:function(package, parameters = [], cb){
+    add:function(package, parameters = [], cb = null){
       newRequest(package, false, parameters, false, 'new', cb);
     },
-    get:function(package, func, parameters = [], promise = false, cb){
+    get:function(package, func, parameters = [], promise = false, cb = null){
       newRequest(package, func, parameters, promise, 'get', cb);
     },
-    destroy:function(cb){
-      cb(destroySpace());
+    destroy:function(){
+      return destroy();
     },
-    isSpaceDestroyed:function(){
-      return isSpaceDestroyed
+    build:function(){
+      return build();
+    },
+    isDestroyed:function(){
+      return isDestroyed
     },
     resetIdle:function(){
       return resetIdle()
