@@ -63,13 +63,14 @@ const npa = require('./node-package-api')(config);
 6. Nested functions can be called by using a dot, like "websockets.websocketfunction".
 7. Any place where you want to insert a callback in a functions parameters, just add 'callback' in de parameters array, like ['param1', 'param2', 'callback', 'param3', 'callback'].
 8. A space is the forked childprocess.
+9. Communicating with the childprocess is async, so make sure to wait for the package to be added before calling functions on it.
 
 ---
 
 ## Functions
 The following methods are available
 
-### add
+**add**
 Adds specified package to the space (childprocess)
 
 `npa.add(package, parameters, callback);`
@@ -114,7 +115,7 @@ Calls a function on the specified package
 `npa.get(package, function, parameters, promise, callback);`
 
 ```js
-  npa.call('path', 'dirname', [__dirname], (req, status, res) => {
+  npa.call('path', 'dirname', [__dirname], false, (req, status, res) => {
       console.log('request:', req);
       console.log('status: ', status);
       console.log('response:', res);
