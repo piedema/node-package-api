@@ -1,4 +1,4 @@
 {
-  "idleTimeout":3600000,
+  "inactivityTimeout":2000,
   "paths":false
 }
