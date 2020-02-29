@@ -13,12 +13,12 @@ Do not expose this package to the web without any security to prevent unauthoris
 3. [Instantiate](#instantiate)
 4. [node-package-api properties](#properties)
 5. [Functions](#functions)
-  1. [add](#add)
-  2. [get](#get)
-  3. [destroy](#destroy)
-  4. [build](#build)
-  5. [isDestroyed](#isDestroyed)
-  6. [resetIdle](#resetIdle)
+    1. [add](#add)
+    2. [get](#get)
+    3. [destroy](#destroy)
+    4. [build](#build)
+    5. [isDestroyed](#isDestroyed)
+    6. [resetIdle](#resetIdle)
 6. [Examples](#examples)
 
 ----
@@ -56,6 +56,7 @@ const npa = require('./node-package-api')(config);
 5. Websockets can be used. On first callback call the result of the websocket is returned. Subsequent calls return the websocket data.
 6. Nested functions can be called by using '.'.
 7. Any place where you want to insert a callback in a functions parameters, just add 'callback' in de parameters array.
+8. A space is the forked childprocess.
 
 ---
 #### functions
