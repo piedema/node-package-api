@@ -199,6 +199,7 @@ ChildProcess {
   _disconnect: [Function] }
 ```
 </details>
+
 ---
 
 > **build** *creates new space and childprocess. Only when space is destroyed before*
@@ -249,6 +250,7 @@ disconnect: [Function],
 _disconnect: [Function] }
 ```
 </details>
+
 ---
 
 > **isKilled** *see if space is killed*
@@ -267,6 +269,7 @@ _disconnect: [Function] }
 false
 ```
 </details>
+
 ---
 
 > **resetInactivity** *reset inactivity timer to prevent killing of space after inactivity*
