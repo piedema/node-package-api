@@ -6,29 +6,32 @@ node-package-api
 Do not expose this package to the web without any security to prevent unauthorised access to your system.
 
 ----
-#### contents
+
+### contents
 
 1. [Installation](#installation)
 2. [Config](#config)
 3. [Instantiate](#instantiate)
-4. [node-package-api properties](#properties)
+4. [Properties](#properties)
 5. [Functions](#functions)
     1. [add](#add)
-    2. [get](#get)
+    2. [call](#call)
     3. [destroy](#destroy)
     4. [build](#build)
-    5. [isDestroyed](#isDestroyed)
-    6. [resetIdle](#resetIdle)
+    5. [isKilled](#isKilled)
+    6. [resetInactivity](#resetInactivity)
 6. [Examples](#examples)
 
 ----
-#### installation
+
+### Installation
 ```js
-npm install node-ipc --save
+npm install node-package-api --save
 ```
 
 ---
-#### config
+
+### Config
 ```js
   {
     "idleTimeout"     :     3600000,
@@ -41,14 +44,17 @@ npm install node-ipc --save
 | idleTimeout  | Number | 3600000       | Timeout for destroying space after no request is recieved
 | paths        | Array  | module.paths  | Array with strings where to look for installed packages
 
-#### instantiate
+---
+
+### Instantiate
 ```js
 const config = require('./config');
 const npa = require('./node-package-api')(config);
 ```
 
 ---
-#### node-package-api properties
+
+### Properties
 1. The success parameter returns true if package and function is found and executed, not if the function itself returns an error or response.
 2. Only one space per node-package-api can be build.
 3. Multiple packages can be initiated per space/node-package-api.
@@ -59,11 +65,13 @@ const npa = require('./node-package-api')(config);
 8. A space is the forked childprocess.
 
 ---
-#### functions
+
+### Functions
 The following methods are available
 
----
-#### add
+-------
+
+### add
 Adds specified package to the space (childprocess)
 
 `npa.add(package, parameters, callback);`
@@ -81,13 +89,14 @@ Adds specified package to the space (childprocess)
 | callback     | function | null    | no       | Callback function which will be called when the package is instantiated
 
 ---
-#### get
-Executes a function on the specified package
+
+### call
+Calls a function on the specified package
 
 `npa.get(package, function, parameters, promise, callback);`
 
 ```js
-  npa.get('path', 'dirname', [__dirname], (req, status, res) => {
+  npa.call('path', 'dirname', [__dirname], (req, status, res) => {
     console.log(req, status, res);
   });
 ```
@@ -111,7 +120,8 @@ If the packacge's function has callback(s), you need to insert them in the param
 ```
 
 ---
-#### destroy
+
+### destroy
 Destroys space and thus kills childprocess
 
 `npa.destroy();`
@@ -122,7 +132,8 @@ Destroys space and thus kills childprocess
 ```
 
 ---
-#### build
+
+### build
 Creates new space and childprocess. Only when space is destroyed before
 
 `npa.build();`
@@ -133,26 +144,29 @@ Creates new space and childprocess. Only when space is destroyed before
 ```
 
 ---
-#### isDestroyed
-See if space is destroyed
 
-`npa.isDestroyed();`
+## isKilled
+See if space is killed
+
+`npa.isKilled();`
 
 ```js
-  let isDestroyed = npa.isDestroyed();
-  console.log(isDestroyed);
+  let isKilled = npa.isKilled();
+  console.log(isKilled);
 ```
 
 ---
-### resetIdle
-Reset inactivity/idle timer to prevent descruction of space after inactivity
 
-`npa.resetIdle();`
+### resetInactivity
+Reset inactivity timer to prevent killing of space after inactivity
+
+`npa.resetInactivity();`
 
 ```js
-  let resetIdle = npa.resetIdle();
-  console.log(resetIdle);
+  let resetInactivity = npa.resetInactivity();
+  console.log(resetInactivity);
 ```
 
 ---
-#### examples
+
+### Examples
