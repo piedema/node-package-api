@@ -68,7 +68,7 @@ const npa = require('./node-package-api')(config);
 
 ## Functions
 The following methods are available
-
+---
 
 > **add** *adds specified package to the space (childprocess)*
 `npa.add(package, parameters, callback);`
@@ -105,7 +105,7 @@ response: Package is added to space
 | package      | String   |         | yes      | Name of package which should be added to space
 | parameters   | Array    | []      | no       | Array where every index represents a parameter needed when instantiating the package.
 | callback     | function | null    | no       | Callback function which will be called when the package is instantiated
-
+---
 
 > **call** *calls a function on the specified package*
 `npa.get(package, function, parameters, promise, callback);`
@@ -150,7 +150,7 @@ If the packacge's function has callback(s), you need to insert them in the param
     'callback'
   ]
 ```
-
+---
 
 > **destroy** *Destroys space and thus kills childprocess*
 `npa.destroy();`
@@ -199,7 +199,7 @@ ChildProcess {
   _disconnect: [Function] }
 ```
 </details>
-
+---
 
 > **build** *creates new space and childprocess. Only when space is destroyed before*
 
@@ -249,7 +249,7 @@ disconnect: [Function],
 _disconnect: [Function] }
 ```
 </details>
-
+---
 
 > **isKilled** *see if space is killed*
 
@@ -267,7 +267,7 @@ _disconnect: [Function] }
 false
 ```
 </details>
-
+---
 
 > **resetInactivity** *reset inactivity timer to prevent killing of space after inactivity*
 
