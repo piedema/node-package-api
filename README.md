@@ -72,11 +72,11 @@ const npa = require('./node-package-api')(config);
 `npa.add(package, parameters, callback);`
 
 ```js
-  npa.add('path', [], (req, status, res) => {
-      console.log('request:', req);
-      console.log('status: ', status);
-      console.log('response:', res);
-  });
+npa.add('path', [], (req, status, res) => {
+    console.log('request:', req);
+    console.log('status: ', status);
+    console.log('response:', res);
+});
 ```
 
 <details>
@@ -110,11 +110,11 @@ response: Package is added to space
 `npa.call(package, function, parameters, promise, callback);`
 
 ```js
-  npa.call('path', 'dirname', [__dirname], false, (req, status, res) => {
-      console.log('request:', req);
-      console.log('status: ', status);
-      console.log('response:', res);
-  });
+npa.call('path', 'dirname', [__dirname], false, (req, status, res) => {
+    console.log('request:', req);
+    console.log('status: ', status);
+    console.log('response:', res);
+});
 ```
 
 <details>
@@ -156,8 +156,8 @@ If the packacge's function has callback(s), you need to insert them in the param
 `npa.destroy();`
 
 ```js
-  let destroyed = npa.destroy();
-  console.log(destroy);
+let destroyed = npa.destroy();
+console.log(destroy);
 ```
 
 <details>
@@ -207,8 +207,8 @@ ChildProcess {
 `npa.build();`
 
 ```js
-  let build = npa.build();
-  console.log(build);
+let build = npa.build();
+console.log(build);
 ```
 
 <details>
@@ -258,8 +258,8 @@ _disconnect: [Function] }
 `npa.isKilled();`
 
 ```js
-  let isKilled = npa.isKilled();
-  console.log(isKilled);
+let isKilled = npa.isKilled();
+console.log(isKilled);
 ```
 
 <details>
@@ -277,8 +277,8 @@ false
 `npa.resetInactivity();`
 
 ```js
-  let resetInactivity = npa.resetInactivity();
-  console.log(resetInactivity);
+let resetInactivity = npa.resetInactivity();
+console.log(resetInactivity);
 ```
 
 <details>
