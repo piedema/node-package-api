@@ -67,10 +67,10 @@ const npa = require('./node-package-api')(config);
 ---
 
 ## Functions
-The following methods are available
 ---
 
 > **add** *adds specified package to the space (childprocess)*
+
 `npa.add(package, parameters, callback);`
 
 ```js
@@ -108,6 +108,7 @@ response: Package is added to space
 ---
 
 > **call** *calls a function on the specified package*
+
 `npa.get(package, function, parameters, promise, callback);`
 
 ```js
@@ -153,6 +154,7 @@ If the packacge's function has callback(s), you need to insert them in the param
 ---
 
 > **destroy** *Destroys space and thus kills childprocess*
+
 `npa.destroy();`
 
 ```js
