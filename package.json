@@ -1,7 +1,7 @@
 {
   "name": "node-package-api",
   "version": "1.0.0",
-  "description": "Run packages in their own process",
+  "description": "Create child processes and run npm packages inside them",
   "main": "node-package-api.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
