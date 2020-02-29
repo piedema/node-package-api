@@ -7,12 +7,12 @@ Do not expose this package to the web without any security to prevent unauthoris
 
 ----
 
-## contents
+## Contents
 
 1. [Installation](#installation)
 2. [Config](#config)
 3. [Instantiate](#instantiate)
-4. [Properties](#properties)
+4. [Tips](#tips)
 5. [Functions](#functions)
     1. [add](#add)
     2. [call](#call)
@@ -54,14 +54,14 @@ const npa = require('./node-package-api')(config);
 
 ---
 
-## Properties
+## Tips
 1. The success parameter returns true if package and function is found and executed, not if the function itself returns an error or response.
 2. Only one space per node-package-api can be build.
-3. Multiple packages can be initiated per space/node-package-api.
-4. Packages must be installed on your system and in paths in module.paths or config.paths
-5. Websockets can be used. On first callback call the result of the websocket is returned. Subsequent calls return the websocket data.
-6. Nested functions can be called by using '.'.
-7. Any place where you want to insert a callback in a functions parameters, just add 'callback' in de parameters array.
+3. Multiple packages can be loaded per space/node-package-api.
+4. Packages must be installed on your system in a path specified in module.paths or config.paths.
+5. Websockets in packages can be used. On first callback the result of opening the websocket is returned. Subsequent calls return the websocket data.
+6. Nested functions can be called by using a dot, like "websockets.websocketfunction".
+7. Any place where you want to insert a callback in a functions parameters, just add 'callback' in de parameters array, like ['param1', 'param2', 'callback', 'param3', 'callback'].
 8. A space is the forked childprocess.
 
 ---
@@ -69,18 +69,37 @@ const npa = require('./node-package-api')(config);
 ## Functions
 The following methods are available
 
--------
-
-## add
+### add
 Adds specified package to the space (childprocess)
 
 `npa.add(package, parameters, callback);`
 
 ```js
   npa.add('path', [], (req, status, res) => {
-    console.log(req, status, res);
+      console.log('request:', req);
+      console.log('status: ', status);
+      console.log('response:', res);
   });
 ```
+
+<details>
+ <summary>View Response</summary>
+
+```js 		 
+request: { id: 472930,
+  package: 'path',
+  parameters: [],
+  type: 'add',
+  paths:
+   [ 'E:\\Projects\\Coding\\GitHub\\node-package-api\\node_modules',
+     'E:\\Projects\\Coding\\GitHub\\node_modules',
+     'E:\\Projects\\Coding\\node_modules',
+     'E:\\Projects\\node_modules',
+     'E:\\node_modules' ] }
+status:  true
+response: Package is added to space
+```
+</details>
 
 |   variable   |  type    | default | required |documentation
 |--------------|----------|---------|----------|---------------
@@ -88,18 +107,34 @@ Adds specified package to the space (childprocess)
 | parameters   | Array    | []      | no       | Array where every index represents a parameter needed when instantiating the package.
 | callback     | function | null    | no       | Callback function which will be called when the package is instantiated
 
----
 
-## call
+### call
 Calls a function on the specified package
 
 `npa.get(package, function, parameters, promise, callback);`
 
 ```js
   npa.call('path', 'dirname', [__dirname], (req, status, res) => {
-    console.log(req, status, res);
+      console.log('request:', req);
+      console.log('status: ', status);
+      console.log('response:', res);
   });
 ```
+
+<details>
+ <summary>View Response</summary>
+
+```js 		 
+request: { id: 238795,
+  package: 'path',
+  parameters: [ 'E:\\Projects\\Coding\\GitHub\\node-package-api' ],
+  type: 'call',
+  function: 'dirname',
+  promise: false }
+status:  true
+response: E:\Projects\Coding\GitHub
+```
+</details>
 
 |   variable   |  type    | default | required |documentation
 |--------------|----------|---------|----------|---------------
@@ -119,9 +154,8 @@ If the packacge's function has callback(s), you need to insert them in the param
   ]
 ```
 
----
 
-## destroy
+### destroy
 Destroys space and thus kills childprocess
 
 `npa.destroy();`
@@ -131,9 +165,48 @@ Destroys space and thus kills childprocess
   console.log(destroy);
 ```
 
----
+<details>
+ <summary>View Response</summary>
 
-## build
+```js 		 
+ChildProcess {
+  _events:
+   [Object: null prototype] { internalMessage: [Function], message: [Function] },
+  _eventsCount: 2,
+  _maxListeners: undefined,
+  _closesNeeded: 2,
+  _closesGot: 0,
+  connected: true,
+  signalCode: null,
+  exitCode: null,
+  killed: true,
+  spawnfile: 'C:\\Program Files\\nodejs\\node.exe',
+  _handle:
+   Process { onexit: [Function], pid: 15440, [Symbol(owner)]: [Circular] },
+  spawnargs: [ 'C:\\Program Files\\nodejs\\node.exe', './space.js' ],
+  pid: 15440,
+  stdin: null,
+  stdout: null,
+  stderr: null,
+  stdio: [ null, null, null, null ],
+  channel:
+   Pipe {
+     buffering: false,
+     pendingHandle: null,
+     onread: [Function],
+     sockets: { got: {}, send: {} } },
+  _channel: [Getter/Setter],
+  _handleQueue: null,
+  _pendingMessage: null,
+  send: [Function],
+  _send: [Function],
+  disconnect: [Function],
+  _disconnect: [Function] }
+```
+</details>
+
+
+### build
 Creates new space and childprocess. Only when space is destroyed before
 
 `npa.build();`
@@ -143,9 +216,48 @@ Creates new space and childprocess. Only when space is destroyed before
   console.log(build);
 ```
 
----
+<details>
+ <summary>View Response</summary>
 
-## isKilled
+```js
+ChildProcess {
+_events:
+ [Object: null prototype] { internalMessage: [Function], message: [Function] },
+_eventsCount: 2,
+_maxListeners: undefined,
+_closesNeeded: 2,
+_closesGot: 0,
+connected: true,
+signalCode: null,
+exitCode: null,
+killed: false,
+spawnfile: 'C:\\Program Files\\nodejs\\node.exe',
+_handle:
+ Process { onexit: [Function], pid: 8388, [Symbol(owner)]: [Circular] },
+spawnargs: [ 'C:\\Program Files\\nodejs\\node.exe', './space.js' ],
+pid: 8388,
+stdin: null,
+stdout: null,
+stderr: null,
+stdio: [ null, null, null, null ],
+channel:
+ Pipe {
+   buffering: false,
+   pendingHandle: null,
+   onread: [Function],
+   sockets: { got: {}, send: {} } },
+_channel: [Getter/Setter],
+_handleQueue: null,
+_pendingMessage: null,
+send: [Function],
+_send: [Function],
+disconnect: [Function],
+_disconnect: [Function] }
+```
+</details>
+
+
+### isKilled
 See if space is killed
 
 `npa.isKilled();`
@@ -155,9 +267,16 @@ See if space is killed
   console.log(isKilled);
 ```
 
----
+<details>
+ <summary>View Response</summary>
 
-## resetInactivity
+```js 		 
+false
+```
+</details>
+
+
+### resetInactivity
 Reset inactivity timer to prevent killing of space after inactivity
 
 `npa.resetInactivity();`
@@ -166,6 +285,25 @@ Reset inactivity timer to prevent killing of space after inactivity
   let resetInactivity = npa.resetInactivity();
   console.log(resetInactivity);
 ```
+
+<details>
+ <summary>View Response</summary>
+
+```js
+Timeout {
+  _idleTimeout: 3600000,
+  _idlePrev: [TimersList],
+  _idleNext: [TimersList],
+  _idleStart: 5081,
+  _onTimeout: [Function],
+  _timerArgs: undefined,
+  _repeat: null,
+  _destroyed: false,
+  [Symbol(refed)]: true,
+  [Symbol(asyncId)]: 30,
+  [Symbol(triggerId)]: 10 }
+```
+</details>
 
 ---
 
