@@ -108,7 +108,7 @@ response: Package is added to space
 
 > **call** *calls a function on the specified package*
 
-`npa.get(package, function, parameters, promise, callback);`
+`npa.call(package, function, parameters, promise, callback);`
 
 ```js
   npa.call('path', 'dirname', [__dirname], false, (req, status, res) => {
