@@ -2,8 +2,7 @@ node-package-api
 ========================
 *a nodejs module for loading nodejs/js packages or modules in a separate process* with full support for Linux, Mac and Windows.
 
-**Security**
-Do not expose this package to the web without any security to prevent unauthorised access to your system.
+> **Security** Do not expose this package to the web without any security to prevent unauthorised access to your system.
 
 ----
 
