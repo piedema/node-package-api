@@ -67,7 +67,6 @@ const npa = require('./node-package-api')(config);
 ---
 
 ## Functions
----
 
 > **add** *adds specified package to the space (childprocess)*
 
