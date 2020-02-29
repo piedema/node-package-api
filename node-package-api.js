@@ -68,11 +68,15 @@ module.exports = function(config){
     let req = {
       id:id,
       package:package,
-      function:func,
       parameters:parameters,
-      promise:promise,
-      type:type,
-      paths:paths
+      type:type
+    }
+
+    if(type === 'add') req.paths = paths;
+
+    if(type === 'call'){
+      req.function = func;
+      req.promise = promise;
     }
 
     // reset inactivityTimeout timer for space because of activity (function call)

@@ -33,9 +33,9 @@ function isPackageInstalled(paths, package){
   let separator = path.sep;                                                                     // separator used depending on OS
   paths.forEach((path) => {
     if(fs.existsSync(path + separator + package)){
-      return true;                                                                              // package is found
     }
   })
+  return true;                                                                                  // package is found
 }
 
 /**
@@ -54,7 +54,7 @@ function addPackage(req, cb){
   let parameters = req.parameters;                                                              // set parameters for instantiation
   if(typeof pack === 'function') packages[package] = new pack(...parameters);                   // instantiate if packages is function
   if(typeof pack === 'object') packages[package] = pack;                                        // store package in packages
-  cb(req, true);                                                                                // callback true because package is laoded
+  cb(req, true, 'Package is added to space');                                                   // callback true because package is laoded
 }
 
 /**

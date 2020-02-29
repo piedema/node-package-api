@@ -1,4 +1,4 @@
 {
-  "inactivityTimeout":2000,
+  "inactivityTimeout":3600000,
   "paths":false
 }
