@@ -7,7 +7,7 @@ Do not expose this package to the web without any security to prevent unauthoris
 
 ----
 
-### contents
+## contents
 
 1. [Installation](#installation)
 2. [Config](#config)
@@ -24,14 +24,14 @@ Do not expose this package to the web without any security to prevent unauthoris
 
 ----
 
-### Installation
+## Installation
 ```js
 npm install node-package-api --save
 ```
 
 ---
 
-### Config
+## Config
 ```js
   {
     "idleTimeout"     :     3600000,
@@ -46,7 +46,7 @@ npm install node-package-api --save
 
 ---
 
-### Instantiate
+## Instantiate
 ```js
 const config = require('./config');
 const npa = require('./node-package-api')(config);
@@ -54,7 +54,7 @@ const npa = require('./node-package-api')(config);
 
 ---
 
-### Properties
+## Properties
 1. The success parameter returns true if package and function is found and executed, not if the function itself returns an error or response.
 2. Only one space per node-package-api can be build.
 3. Multiple packages can be initiated per space/node-package-api.
@@ -66,12 +66,12 @@ const npa = require('./node-package-api')(config);
 
 ---
 
-### Functions
+## Functions
 The following methods are available
 
 -------
 
-### add
+## add
 Adds specified package to the space (childprocess)
 
 `npa.add(package, parameters, callback);`
@@ -90,7 +90,7 @@ Adds specified package to the space (childprocess)
 
 ---
 
-### call
+## call
 Calls a function on the specified package
 
 `npa.get(package, function, parameters, promise, callback);`
@@ -121,7 +121,7 @@ If the packacge's function has callback(s), you need to insert them in the param
 
 ---
 
-### destroy
+## destroy
 Destroys space and thus kills childprocess
 
 `npa.destroy();`
@@ -133,7 +133,7 @@ Destroys space and thus kills childprocess
 
 ---
 
-### build
+## build
 Creates new space and childprocess. Only when space is destroyed before
 
 `npa.build();`
@@ -157,7 +157,7 @@ See if space is killed
 
 ---
 
-### resetInactivity
+## resetInactivity
 Reset inactivity timer to prevent killing of space after inactivity
 
 `npa.resetInactivity();`
@@ -169,4 +169,4 @@ Reset inactivity timer to prevent killing of space after inactivity
 
 ---
 
-### Examples
+## Examples
