@@ -34,14 +34,14 @@ npm install node-package-api --save
 ## Config
 ```js
   {
-    "idleTimeout"     :     3600000,
-    "paths"           :     false
+    "inactivityTimeout"     :     3600000,
+    "paths"                 :     false
   }
 ```
 
 |   variable   |  type  | default value | documentation
 |--------------|--------|---------------|---------------
-| idleTimeout  | Number | 3600000       | Timeout for destroying space after no request is recieved
+| inactivityTimeout  | Number | 3600000       | Timeout for destroying space after no request is recieved
 | paths        | Array  | module.paths  | Array with strings where to look for installed packages
 
 ---
