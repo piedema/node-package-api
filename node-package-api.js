@@ -1,84 +1,70 @@
 const { fork } = require('child_process');
 
-// set default timeout value for if config is incorrect or missing
-// idleTimeout is how long it takes before the space is destroyed if there is no request
-const defaults = {
-  idleTimeout:3600000,
-  paths:module.paths
-}
-
-// hold callbacks which are passed with newRequest
-// the individual callbacks are stored by their id (random number) as key
-const callbacks = {};
-
-// separate process which contains all loaded packages
-let space;
-
-// store to be able to determin via function if space is still active (alive) or is allready destroyed
-let isDestroyed;
-
-// logic for handling request to and termination of space
 module.exports = function(config){
 
+  const defaults = {
+    inactivityTimeout:3600000,
+    paths:module.paths
+  }
+
+  const callbacks = {};                 // holds all callbacks from parent - key is req.id
+  let space;                            // holds a reference to childprocess object
+  let inactivityTimer = {};             // holds the timer for inactivity of the space
+
   // set space options
-  const idleTimeout = config.idleTimeout || defaults.idleTimeout;
+  const inactivityTimeout = config.inactivityTimeout || defaults.inactivityTimeout;
   const paths = config.paths || defaults.paths;
 
-  // function to destroy space on inactivity or function call
+  /**
+  * destroy/kill the space/childprocess object
+  * @return {object} - returns space/childprocess object
+  */
   function destroy(){
-    // remote the timeout
-    if(space.idleTimeout) clearTimeout(space.idleTimeout);
-    // kill the space process
+    clearTimeout(inactivityTimer);
     space.kill();
-    // set isSpaceDestroyed to true to check later if space is destroyed
-    if(space.killed) isDestroyed = true;
-
-    // // listen for messages coming from the space process
-    // // if message comes, it should execute the right callback
-    // space.off('message', (msg) => {
-    // });
-
-    // return the destroyed space
     return space
   }
 
-  // function to fork new space if space doesnt exist
+  /**
+  * create a new space/childprocess to contain packages and add a listener for messages
+  * @return {object} - returns space/childprocess object
+  */
   function build(){
     space = fork('./space.js');
 
-    // // listen for messages coming from the space process
-    // // if message comes, it should execute the right callback
-    // space.on('message', (msg) => {
-    //   return msg;
-    // });
+    space.on('message', (msg) => {
+      if(callbacks[msg.req.id]) callbacks[msg.req.id](msg.req, msg.status, msg.res);
+    });
 
-    if(space) isDestroyed = false;
     return space;
   };
 
-  // function to reset time idleTimout space timer
-  function resetIdle(){
-    if(space.idleTimeout) clearTimeout(space.idleTimeout);
-    return space.idleTimeout = setTimeout(() => {
-      destroySpace();
-    }, idleTimeout);
+  /**
+  * reset the inactivity timer to prevent desctruction of space after passing of inactivityTimeout
+  * @return {object} - returns timer object
+  */
+  function resetInactivity(){
+    clearTimeout(inactivityTimer);
+    return inactivityTimer = setTimeout(() => {
+      destroy();
+    }, inactivityTimeout);
   }
 
-  // request to space
-  // package is package name to use function on
-  // func is function to call
-  // parameters is function parameters, or parameters needed for new package loading
-  // promise is boolean (true if package function returns promise)
-  // type is (new for new package, get for executing function on existing package)
-  // cb is callback when data is returned from space
+  /**
+  * a request to space (childprocess) for adding packages or calling functions
+  * @param {string} package - Name of package (node_module)
+  * @param {string} func - Name of function to call in package
+  * @param {array} parameters - parameters of function to call
+  * @param {boolean} promise - True if function returns a promise
+  * @param {string} type - type of request
+  * @param {function} cb - callback function to send data back to parent
+  * @return {undefined}
+  */
   function newRequest(package, func, parameters, promise = false, type, cb){
-
-    // create id to reference callback function
     let id = parseInt(Math.random() * 1000000);
-    // store callback in callbacks object to later execute the cb function when to correct data is returned from space
     if(cb) callbacks[id] = cb;
 
-    // new request object which also gets returned from space
+    // new request object
     let req = {
       id:id,
       package:package,
@@ -89,11 +75,11 @@ module.exports = function(config){
       paths:paths
     }
 
-    // reset idleTimeout timer for space because of activity (function call)
-    resetIdle();
+    // reset inactivityTimeout timer for space because of activity (function call)
+    resetInactivity();
 
     // if request is made while space is allready killed then notify caller
-    if(isDestroyed) return callbacks[req.id](req, false, 'Space is destroyed');
+    if(space.killed) return callbacks[req.id](req, false, 'Space is not alive, build a space first');
 
     // send the request to the space
     space.send(req);
@@ -102,34 +88,62 @@ module.exports = function(config){
   // build first space on instantiation
   build();
 
-  // return function to communicate with this module:
-  // new: create new package in Space
-  //
-  // get: execute function on specified module in Space
-  //
-  // destroy: purposefully destroy space and return destroyed space object
-  //
-  // isSpaceDestroyed: check if space is destroyed
-  //
-  // resetIdle: reset idle timer/inactivity to prevent space is destroyed on inactivity
   return {
+
+    /**
+    * adds a new package to space
+    * @param {string} package - Name of package (node_module)
+    * @param {array} parameters - parameters needed if package returns function
+    * @param {function} cb - callback function to send data back to parent
+    * @return {undefined}
+    */
     add:function(package, parameters = [], cb = null){
-      newRequest(package, false, parameters, false, 'new', cb);
+      newRequest(package, false, parameters, false, 'add', cb);
     },
-    get:function(package, func, parameters = [], promise = false, cb = null){
-      newRequest(package, func, parameters, promise, 'get', cb);
+
+    /**
+    * calls a function in an existing package
+    * @param {string} package - Name of package (node_module)
+    * @param {string} func - name of function to call - separate nested functions with a '.'
+    * @param {array} parameters - parameters to use in function call
+    * @param {boolean} promise - true if function returns a promise, false if not
+    * @param {function} cb - callback function to send data back to parent
+    * @return {undefined}
+    */
+    call:function(package, func, parameters = [], promise = false, cb = null){
+      newRequest(package, func, parameters, promise, 'call', cb);
     },
+
+    /**
+    * destroys a space/childprocess and ends all active scripts in it
+    * @return {object} - returns the destroyed space
+    */
     destroy:function(){
       return destroy();
     },
+
+    /**
+    * builds a new space/childprocess and creates a listener
+    * @return {object} - returns the freshly created space
+    */
     build:function(){
       return build();
     },
-    isDestroyed:function(){
-      return isDestroyed
+
+    /**
+    * returns the status op the space/childprocess
+    * @return {boolean} - returns the status of the space
+    */
+    isKilled:function(){
+      return space.killed
     },
-    resetIdle:function(){
-      return resetIdle()
+
+    /**
+    * resets the inactivity timer of the space to avoid space destruction
+    * @return {object} - returns the new timer object
+    */
+    resetInactivity:function(){
+      return resetInactivity()
     }
   }
 }

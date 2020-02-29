@@ -1,108 +1,100 @@
-// require fetch for packages using promises
-const fetch = require('node-fetch');
+const fetch = require('node-fetch');                                                            // require fetch for packages using promises
 const path = require('path');
 const fs = require('fs');
 
-// packages holds all loaded packages
-const packages = {};
+const packages = {};                                                                            // will hold all loaded packages
 
-// standard error messages
 const ERROR = {
   PACKAGE_NOT_FOUND:'Package is not found',
-  PACKAGE_ALLREADY_LOADED:'Package is loaded',
+  PACKAGE_NOT_LOADED:'Package is not loaded, please add package first',
+  PACKAGE_ALLREADY_LOADED:'Package is allready loaded',
   FUNCTION_NOT_FOUND:'Function is not found on package',
   NO_CB:'No callback function specified',
   PARAMETERS_IS_NOT_ARRAY:'Parameters is not array'
 }
 
-// listener to listen for requests coming from node-package-api parent process
+/**
+* listener listening for messages(requests) from parent process
+* (data.type === add) add new package to space
+* (data.type === call) call function in package
+*/
 process.on('message', (data) => {
-  // on type = new create new packages
-  if(data.type === 'new') newPackage(data, (req, status = false, res = null) => { process.send({req:req, status:status, res:res}) });
-  // on type = get execture function on given package
-  if(data.type === 'get') run(data, (req, status = false, res = null) => { process.send({req:req, status:status, res:res}) });
+  if(data.type === 'add') addPackage(data, (req, status = false, res = null) => { process.send({req:req, status:status, res:res}) });
+  if(data.type === 'call') call(data, (req, status = false, res = null) => { process.send({req:req, status:status, res:res}) });
 });
 
-// check if package is installed on system in node_modules folder in all given paths
-// to make sure a not-installed package is not required and prevent error
-function isPackageInstalled(paths, mod){
-  // separator used depending on OS
-  let separator = path.sep;
-  // boolean if package is found
-  let isFound = false;
-  // itterate paths, if p-ackage is found anywhere in given paths, isFound = true and package is isntalled
+/**
+* checks if a package is installed in any of the provided spaces
+* @param {array} paths - Name of package (node_module)
+* @param {string} parameters - parameters needed if package returns function
+* @return {boolean} returns true if a package with package name is found in provided path(s)
+*/
+function isPackageInstalled(paths, package){
+  let separator = path.sep;                                                                     // separator used depending on OS
   paths.forEach((path) => {
-    if(fs.existsSync(path + separator + mod )){
-      isFound = true;
+    if(fs.existsSync(path + separator + package)){
+      return true;                                                                              // package is found
     }
   })
-  // return isFound to caller
-  return isFound;
 }
 
-// load new package for later use in requests
-function newPackage(req, cb){
-  // package name to load
-  let package = req.package;
-  // check if package is allready loaded
-  if(packages[package]) return cb(req, false, ERROR.PACKAGE_ALLREADY_LOADED);
-  // check if package is installed in system, return if it isnt
+/**
+* add package to space
+* @param {object} req - request data recieved from parent process
+* @param {function} cb - callback function to send data back to parent process
+* @return {function} {packages[package]} - package is allready loaded. returns request data, false and error to parent process
+* @return {function} {!isPackageInstalled} - package is not found. returns request data, false and error to parent process
+*/
+function addPackage(req, cb){
+  let package = req.package;                                                                    // package name to load
+  if(packages[package]) return cb(req, false, ERROR.PACKAGE_ALLREADY_LOADED);                   // check if package is allready loaded
   let paths = req.paths;
-  if(!isPackageInstalled(paths, package)) return cb(req, false, ERROR.PACKAGE_NOT_FOUND);
-  // require package
-  let pack = require(package);
-  // set parameters for instantiation
-  let parameters = req.parameters;
-  // check if package is function. if so, then instantiate with optional parameters and store in packages object
-  if(typeof pack === 'function') packages[package] = new pack(...parameters);
-  // store package in packages
-  if(typeof pack === 'object') packages[package] = pack;
-  // package is loaded, so return true to caller
-  cb(req, true);
+  if(!isPackageInstalled(paths, package)) return cb(req, false, ERROR.PACKAGE_NOT_FOUND);       // check if package is installed
+  let pack = require(package);                                                                  // require package
+  let parameters = req.parameters;                                                              // set parameters for instantiation
+  if(typeof pack === 'function') packages[package] = new pack(...parameters);                   // instantiate if packages is function
+  if(typeof pack === 'object') packages[package] = pack;                                        // store package in packages
+  cb(req, true);                                                                                // callback true because package is laoded
 }
 
-// execute function in package on request
-function run(req, cb){
-  // return callback error if package does not exist
-  let package = req.package;
-  if(!packages[package]) return cb(req, false, ERROR.PACKAGE_NOT_FOUND);
+/**
+* call function in package
+* @param {object} req - request data recieved from parent process
+* @param {function} cb - callback function to send data back to parent process
+* @return {function} {!packages[package]} - package is not added. returns request data, false and error to parent process
+* @return {function} {!target} - function is not found on specified package. returns request data, false and error to parent process
+*/
+function call(req, cb){
+  let package = req.package;                                                                    // package name
+  if(!packages[package]) return cb(req, false, ERROR.PACKAGE_NOT_LOADED);                       // return callback error if package does not exist
 
-  // build path to function
-  let func = req.function.split('.');
-  let target = packages[package];
-  func.forEach((key) => {
+  let func = req.function.split('.');                                                           // turn nested function string into array
+  let target = packages[package];                                                               // start target path query with package
+  func.forEach((key) => {                                                                       // itterate function array to build path to function
     target = target[key];
   });
-  // if target is false then provided "func/req.function" path is false, return callback error
-  if(!target) return cb(req, false, ERROR.FUNCTION_NOT_FOUND);
 
-  // prepare parameters, if req.parameters != array then set empty array
+  if(!target) return cb(req, false, ERROR.FUNCTION_NOT_FOUND);                                  // if target function does not exist return error
+
   let parameters = Array.isArray(req.parameters) ? req.parameters : [];
-  // replace all 'callback' strings in parameters array with actual callback function
-  for(let i = 0; i < parameters.length; i++){
+  for(let i = 0; i < parameters.length; i++){                                                   //  replace all 'callback' values with actual callbacks
     if(parameters[i] === 'callback'){
       parameters[i] = (error, response) => {
-        // the return true value is true for being able to execute function on package and return a value.
-        // it doenst indicate that the actual function didnt return an error
-        cb(req, true, error || response);
-      }
+        cb(req, true, error || response);                                                       // the returned status 'true' indicates htath the function was executed
+      }                                                                                         // the function itself might return an error while status = true
     }
   }
 
-  // logic for using promises or not
   let isPromise = req.isPromise;
-  if(isPromise){
+  if(isPromise){                                                                                // if target function = promise, req.promise should be true and a promise is returned
       return target(...parameters)
         .then(function(data){
           cb(req, true, data);
         })
         .catch(function(error){
-          // the return true value is true for being able to execute function on package and return a value.
-          // it doenst indicate that the actual function didnt return an error
           cb(req, true, error);
         })
   }
 
-  // call target function for callback and return types. return data to be send to client
-  if(!isPromise) cb(req, true, target(...parameters));
+  if(!isPromise) cb(req, true, target(...parameters));                                          // if target function != promise, call target and return result with callback
 }
