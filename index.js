@@ -6,33 +6,15 @@ npa.add('path', [], (req, status, res) => {
 })
 
 
-npa.get('path', 'dirname', [__dirname], false, (req, status, res) => {
-  console.log(req, status, res)
-})
+
 
 setInterval(() => {
-  npa.get('path', 'dirname', [__dirname], false, (req, status, res) => {
-    console.log(status, res)
-  })
+  npa.resetInactivity();
+
+  console.log(npa.isKilled());
 }, 1000)
 
-setTimeout(() => {
-  npa.destroy((req, status, res) => {
-    console.log(req, status, res)
-  })
-}, 4000);
 
-setTimeout(() => {
-  npa.build((req, status, res) => {
-    console.log(req, status, res)
-  })
-}, 9000);
-
-setTimeout(() => {
-  npa.add('path', [], (req, status, res) => {
-    console.log(req, status, res)
-  })
-}, 12000)
 
 // setTimeout(() => {
 // npa.destroy((status) => {
