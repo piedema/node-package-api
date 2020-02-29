@@ -20,7 +20,6 @@ Do not expose this package to the web without any security to prevent unauthoris
     4. [build](#build)
     5. [isKilled](#isKilled)
     6. [resetInactivity](#resetInactivity)
-6. [Examples](#examples)
 
 ----
 
@@ -70,8 +69,7 @@ const npa = require('./node-package-api')(config);
 ## Functions
 The following methods are available
 
-**add**
-Adds specified package to the space (childprocess)
+> **add** Adds specified package to the space (childprocess)
 
 `npa.add(package, parameters, callback);`
 
@@ -305,7 +303,3 @@ Timeout {
   [Symbol(triggerId)]: 10 }
 ```
 </details>
-
----
-
-## Examples
