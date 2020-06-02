@@ -24,7 +24,7 @@ node-package-api
 
 ## Installation
 ```js
-npm install node-package-api --save
+npm install node-package-api
 ```
 
 ---
@@ -134,13 +134,25 @@ response: E:\Projects\Coding\GitHub
 
 |   variable   |  type    | default | required |documentation
 |--------------|----------|---------|----------|---------------
-| package      | String   |         | yes      | Timeout for destroying space after no request is recieved
+| package      | String   |         | yes      | Package in space to call function on
+| function     | String   |         | yes      | Function to call on specified package
 | parameters   | Array    | []      | no       | Array where every index represents a parameter needed when calling a package's function
 | promise      | Boolean  | false   | no       | Pass true if package's function returns a promise
 | callback     | function | null    | no       | Callback function which will be called the functions result is returned from the space. This is not the callback for package's function itself.
 
 If the packacge's function has callback(s), you need to insert them in the parameters array, like following example. The 'callback strings' are automatically converted to a callback with (error, response) as parameters.
 ```js
+
+// EXAMPLE
+
+  let parameters = [
+    'parameter1',
+    'parameter2',
+    'callback'
+  ]
+  
+  // OR
+
   let parameters = [
     'test_parameter_1',
     'test_parameter_2',
@@ -151,7 +163,7 @@ If the packacge's function has callback(s), you need to insert them in the param
 ```
 ---
 
-> **destroy** *Destroys space and thus kills childprocess*
+> **destroy** *Destroys space/childprocess and thus all containing packages won't be available anymore*
 
 `npa.destroy();`
 
@@ -202,7 +214,7 @@ ChildProcess {
 
 ---
 
-> **build** *creates new space and childprocess. Only when space is destroyed before*
+> **build** *creates new space/childprocess. Only when space is destroyed before (so there is no existing space yet)*
 
 `npa.build();`
 
