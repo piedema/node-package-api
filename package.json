@@ -10,5 +10,17 @@
   "license": "MIT",
   "dependencies": {
     "node-fetch": "^2.6.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piedema/node-package-api.git"
+  },
+  "keywords": [
+    "package",
+    "api"
+  ],
+  "bugs": {
+    "url": "https://github.com/piedema/node-package-api/issues"
+  },
+  "homepage": "https://github.com/piedema/node-package-api#readme"
 }
