@@ -56,10 +56,10 @@ const npa = require('./node-package-api')(config);
 1. The success parameter returns true if package and function is found and executed, not if the function itself returns an error or response.
 2. Only one space per node-package-api can be build.
 3. Multiple packages can be loaded per space/node-package-api.
-4. Packages must be installed on your system in a path specified in module.paths or config.paths.
+4. Packages must be installed on your system in a path specified in native module.paths or custom config.paths.
 5. Websockets in packages can be used. On first callback the result of opening the websocket is returned. Subsequent calls return the websocket data.
 6. Nested functions can be called by using a dot, like "websockets.websocketfunction".
-7. Any place where you want to insert a callback in a functions parameters, just add 'callback' in de parameters array, like ['param1', 'param2', 'callback', 'param3', 'callback'].
+7. Any place where you want to insert a callback in a functions parameters, just add 'cb:' with the number of parameters it has in de parameters array, like ['param1', 'param2', 'cb:2', 'param3', 'cb:1']. All callbacks parameters will be returned in an array in the main npa.call callback as third parameter (called res in documentation).
 8. A space is the forked childprocess.
 9. Communicating with the childprocess is async, so make sure to wait for the package to be added before calling functions on it.
 
@@ -140,7 +140,8 @@ response: E:\Projects\Coding\GitHub
 | promise      | Boolean  | false   | no       | Pass true if package's function returns a promise
 | callback     | function | null    | no       | Callback function which will be called the functions result is returned from the space. This is not the callback for package's function itself.
 
-If the packacge's function has callback(s), you need to insert them in the parameters array, like following example. The 'callback strings' are automatically converted to a callback with (error, response) as parameters.
+If the packacge's function has callback(s), you need to insert them in the parameters array, like following example. The 'callback strings' are automatically converted to a callback with the number of wanted parameters specified behind the ':'.
+The main npa.call function cb will be called for every 'cb:' parameter passed.
 ```js
 
 // EXAMPLE
@@ -148,17 +149,17 @@ If the packacge's function has callback(s), you need to insert them in the param
   let parameters = [
     'parameter1',
     'parameter2',
-    'callback'
+    'cb:2'
   ]
-  
+
   // OR
 
   let parameters = [
     'test_parameter_1',
     'test_parameter_2',
-    'callback',
+    'cb:4',
     'test_parameter_3',
-    'callback'
+    'cb:1'
   ]
 ```
 ---
