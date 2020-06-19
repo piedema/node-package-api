@@ -7,6 +7,9 @@ module.exports = function(config){
     paths:module.paths
   }
 
+  //id to be used for internal requests to space
+  let lastId = 0
+
   const callbacks = {};                 // holds all callbacks from parent - key is req.id
   let space;                            // holds a reference to childprocess object
   let inactivityTimer = {};             // holds the timer for inactivity of the space
@@ -60,8 +63,8 @@ module.exports = function(config){
   * @param {function} cb - callback function to send data back to parent
   * @return {undefined}
   */
-  function newRequest(package, func, parameters, promise = false, type, cb){
-    let id = parseInt(Math.random() * 1000000);
+  function newRequest(package, func, parameters, isPromise, type, cb){
+    let id = lastId++
     if(cb) callbacks[id] = cb;
 
     // new request object
@@ -76,7 +79,7 @@ module.exports = function(config){
 
     if(type === 'call'){
       req.function = func;
-      req.promise = promise;
+      req.isPromise = isPromise;
     }
 
     // reset inactivityTimeout timer for space because of activity (function call)
@@ -101,7 +104,7 @@ module.exports = function(config){
     * @param {function} cb - callback function to send data back to parent
     * @return {undefined}
     */
-    add:function(package, parameters = [], cb = null){
+    add:function(package, parameters = false, cb = null){
       newRequest(package, false, parameters, false, 'add', cb);
     },
 
@@ -114,8 +117,8 @@ module.exports = function(config){
     * @param {function} cb - callback function to send data back to parent
     * @return {undefined}
     */
-    call:function(package, func, parameters = [], promise = false, cb = null){
-      newRequest(package, func, parameters, promise, 'call', cb);
+    call:function(package, func, parameters = [], isPromise = false, cb = null){
+      newRequest(package, func, parameters, isPromise, 'call', cb);
     },
 
     /**

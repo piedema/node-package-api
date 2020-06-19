@@ -78,9 +78,13 @@ function call(req, cb){
 
   let parameters = Array.isArray(req.parameters) ? req.parameters : [];
   for(let i = 0; i < parameters.length; i++){                                                   //  replace all 'callback' values with actual callbacks
-    if(parameters[i] === 'callback'){
-      parameters[i] = (error, response) => {
-        cb(req, true, error || response);                                                       // the returned status 'true' indicates htath the function was executed
+    if(parameters[i].startsWith('cb')){
+      let nParams = parseFloat(parameters[i].split(':')[1])
+      let params = Array.apply(null, Array(nParams)).map(                                       // create new array with the length specified as parameters[i] by providing
+        (x, i) => { return '_' + i; }                                                           // cb:1 or higher number in the call function. the number indicates the amount
+      )                                                                                         // of parameters the target function returns
+      parameters[i] = (...res) => {
+        cb(req, true, res);                                                               // the returned status 'true' indicates that the function was executed
       }                                                                                         // the function itself might return an error while status = true
     }
   }
@@ -96,5 +100,5 @@ function call(req, cb){
         })
   }
 
-  if(!isPromise) cb(req, true, target(...parameters));                                          // if target function != promise, call target and return result with callback
+  if(!isPromise) target(...parameters)                                                          // if target function != promise, call target function
 }
