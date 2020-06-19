@@ -1,13 +1,13 @@
 {
   "name": "node-package-api",
   "version": "1.0.0",
-  "description": "Create child processes and run npm packages inside them",
+  "description": "Create child processes and run pre-installed npm packages inside them",
   "main": "node-package-api.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Peter Iedema",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "node-fetch": "^2.6.0"
   }
